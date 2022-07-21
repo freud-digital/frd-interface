@@ -1,0 +1,9 @@
+tests.ipynb
+.ipynb_checkpoints
+test.xml
+test.json
+/venv
+/tmp
+/collate-out
+/werke
+__pycache__

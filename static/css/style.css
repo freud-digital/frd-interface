@@ -1,0 +1,49 @@
+/**** Font Aweseome ***/
+.far {
+    font-family: "Font Awesome 5 Free" !important;
+}
+
+p {
+    display: block;
+}
+
+.container-fluid {
+    max-width: 1024px;
+}
+
+#github-logo {
+    width: 10%;
+    height: auto;
+    padding: 10px 0 10px 0;
+    transition: transform .2s;
+    margin-left: 1em;
+}
+
+#github-logo:hover {
+    transform: scale(1.05);
+}
+
+#loading {
+    display: block;
+    margin-top: 2em;
+    font-size: 24px;
+    padding: 2em; 
+}
+
+label {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    margin: 2em auto;
+}
+
+.btn-primary {
+    padding: 2em;
+    color: white !important;
+    font-size: 18px;
+}
+
+.btn-success {
+    padding: 2em;
+    font-size: 18px;
+}
