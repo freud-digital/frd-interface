@@ -64,7 +64,7 @@
                   pom.classList.add('dragout');
                   pom.setAttribute('class', 'btn btn-success');
                   pom.setAttribute('style', 'display:block;margin-bottom:2em;');
-                  pom.innerHTML = `Kollationierung herunterladen: ${selected.split(',')[0]}`;
+                  pom.innerHTML = `Kollationierung herunterladen (${selected.split(',')[0]}) `;
                   result2.append(pom);
                   var loader = document.getElementById('loading');
                   loader.innerHTML = "Kollationierung abgeschlossen";
@@ -88,7 +88,7 @@
                   pom2.setAttribute('class', 'btn btn-success');
                   pom2.setAttribute('style', 'display:block;margin-bottom:2em;');
                   pom2.classList.add('dragout');
-                  pom2.innerHTML = `Konstituierten Text ${selected.split(',')[0]} herunterladen`;
+                  pom2.innerHTML = `Konstituierten Text herunterladen (${selected.split(',')[0]})`;
                   result2.append(pom2);
                }
             });
