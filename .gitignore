@@ -2,7 +2,7 @@ tests.ipynb
 .ipynb_checkpoints
 test.xml
 test.json
-/venv
+/env
 /tmp
 /collate-out
 /werke

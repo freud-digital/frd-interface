@@ -1,8 +1,8 @@
 
 from flask import Flask, render_template
 
-from config import FRD_DATA, WERK_PATH
-from utils import get_frd_data, create_html_template, copy_xml, collate_tei
+from app.config import FRD_DATA, WERK_PATH
+from app.utils import get_frd_data, create_html_template, copy_xml, collate_tei
 
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -35,5 +35,5 @@ def get_collated(selected):
     return collated
 
 
-if __name__ == "__main__":
-    app.run()
+# if __name__ == "__main__":
+#     app.run()
