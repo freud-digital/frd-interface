@@ -54,7 +54,8 @@ def create_html_template(input):
         div = f'<div id="w__{x}">'
         w = f'<label>Werksignatur {x}:</label>'
         div += w
-        select = f"""<select class="custom-select" id="s__{x}" onchange="get_select(this)">
+        select = f"""<select class="custom-select" id="s__{x}"
+            onchange="get_select(this)">
             <option selected="selected">Manifestation auswählen</option>"""
         try:
             for w in input[x]:
