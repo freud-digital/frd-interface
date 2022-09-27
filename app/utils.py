@@ -97,8 +97,9 @@ def copy_xml(save_path, path_dir, select):
 
 
 def copy_html():
-    html = HTML
-    html = ET.parse(html)
+    h = HTML
+    html = ET.parse(h)
+    os.remove(h)
     root = html.getroot()
     html = ET.tostring(root, encoding="utf-8")
     return html
@@ -163,8 +164,7 @@ def collate_tei(save_path, path_dir, select):
     full_doc = merge_html_fragments(files)
     with open(result_html, 'w') as f:
         f.write(full_doc.prettify("utf-8").decode('utf-8'))
-    # result_html = full_doc.prettify("utf-8").decode('utf-8')
-
+    result_html = full_doc.prettify("utf-8").decode('utf-8')
     shutil.rmtree("tmp_to_collate")
     for x in glob.glob(f"{output_dir}/out__*"):
         print(f"removing {x}")

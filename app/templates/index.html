@@ -93,7 +93,44 @@
 
                   to_collate.setAttribute("onclick", attr);
                   to_collate.classList.add("btn-primary");
-               }
+
+                  let app = document.createElement('a');
+                  app.setAttribute("class", "btn btn-success");
+                  app.setAttribute("id", "get_app");
+                  app.setAttribute("href", "#");
+                  app.setAttribute('style', 'display:block;margin-bottom:2em;');
+                  app.style.backgroundColor = "#000";
+                  app.style.color = "#fff";
+                  app.innerHTML = "Create WebApp";
+                  result2.append(app);
+
+                  document.getElementById("get_app").addEventListener("click", function() {
+                     $.ajax({
+                        type: "POST",
+                        url: "/html",
+                        success: function (data3) { 
+                           let html = data3;
+                           let filename = "index.html"
+                           let result2 = document.getElementById('result2');
+                           let pom = document.createElement('a');
+                           let bb = new Blob([html], {type: 'text/plain'});
+         
+                           pom.setAttribute('href', window.URL.createObjectURL(bb));
+                           pom.setAttribute('download', filename);
+         
+                           pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+                           pom.draggable = true;
+                           pom.setAttribute('class', 'btn btn-success');
+                           pom.setAttribute('style', 'display:block;margin-bottom:2em;');
+                           pom.style.backgroundColor = "orange";
+                           pom.classList.add('dragout');
+                           pom.innerHTML = `WebApp (index.html) zur Kollationierung herunterladen`;
+                           result2.append(pom);
+                        }
+                     });
+                  });
+               },
+               timeout: 60000
             });
             $.ajax({
                type: "POST",
@@ -115,35 +152,6 @@
                   pom.style.backgroundColor = "red";
                   pom.classList.add('dragout');
                   pom.innerHTML = `Konstituierten Text herunterladen (${selected.split(',')[0]})`;
-                  result2.append(pom);
-
-                  // var filename3 = "index.html"
-                  // var pom3 = document.createElement('a');
-                  // pom3.setAttribute('download', filename3);
-                  // pom3.innerHTML = `KollationierungsApp (${selected.split(',')[0]}) herunterladen.´`;
-                  // result2.append(pom3);
-               }
-            });
-            $.ajax({
-               type: "POST",
-               url: "/html",
-               success: function (data3) { 
-                  let html = data3;
-                  let filename = "index.html"
-                  let result2 = document.getElementById('result2');
-                  let pom = document.createElement('a');
-                  let bb = new Blob([html], {type: 'text/plain'});
-
-                  pom.setAttribute('href', window.URL.createObjectURL(bb));
-                  pom.setAttribute('download', filename);
-
-                  pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
-                  pom.draggable = true;
-                  pom.setAttribute('class', 'btn btn-success');
-                  pom.setAttribute('style', 'display:block;margin-bottom:2em;');
-                  pom.style.backgroundColor = "orange";
-                  pom.classList.add('dragout');
-                  pom.innerHTML = `WebApp (index.html) zur Kollationierung herunterladen`;
                   result2.append(pom);
                }
             });
