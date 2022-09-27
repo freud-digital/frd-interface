@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app
 
-CMD ["gunicorn", "app.main:app", "--bind", "0.0.0.0:8020"]
+CMD ["gunicorn", "app.main:app", "--bind", "0.0.0.0:8020", "--timeout", "600"]
