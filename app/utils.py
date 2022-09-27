@@ -11,8 +11,7 @@ from acdh_collatex_utils.post_process import (
     merge_tei_fragments,
     make_full_tei_doc,
     define_readings,
-    make_positive_app,
-    merge_html_fragments
+    make_positive_app
 )
 from app.config import XPATH, CHUNK_SIZE
 
@@ -22,6 +21,7 @@ XSLT_FILE = os.path.join(
     "fixtures",
     "make_tei.xslt"
 )
+
 
 def get_frd_data(url, save_path, path_dir, save):
     frd_data = requests.get(
@@ -119,7 +119,7 @@ def collate_tei(save_path, path_dir, select):
     os.makedirs('collate-out/collated', exist_ok=True)
     output_dir = "./collate-out/collated"
     result_file = f'{output_dir}/collated.xml'
-    result_html = './index.html'
+    # result_html = './index.html'
 
     print("starting...")
     CxCollate(
@@ -166,4 +166,3 @@ def collate_tei(save_path, path_dir, select):
 
 def remove_dir(save_path):
     shutil.rmtree(save_path)
-
