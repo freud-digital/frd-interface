@@ -6,14 +6,22 @@ import json
 import xml.etree.ElementTree as ET
 
 from zipfile import ZipFile
-from acdh_collatex_utils.acdh_collatex_utils import CxCollate
+from acdh_collatex_utils.acdh_collatex_utils import CxCollate, CxReader
 from acdh_collatex_utils.post_process import (
     merge_tei_fragments,
     make_full_tei_doc,
     define_readings,
-    make_positive_app
+    make_positive_app,
+    merge_html_fragments
 )
+from app.config import XPATH, CHUNK_SIZE
 
+
+XSLT_FILE = os.path.join(
+    os.path.dirname(__file__),
+    "fixtures",
+    "make_tei.xslt"
+)
 
 def get_frd_data(url, save_path, path_dir, save):
     frd_data = requests.get(
@@ -92,12 +100,26 @@ def collate_tei(save_path, path_dir, select):
     el = select
     werk = el[1].replace('s__', '')
     manifest = el[0]
-    all_manifests = os.path.join(save_path, '*', path_dir, werk, '*.xml')
+    all_manifests_pre = glob.glob(os.path.join(save_path, '*', path_dir, werk, '*.xml'))
+    os.makedirs("tmp_to_collate", exist_ok=True)
+    for x in all_manifests_pre:
+        tei = CxReader(
+            xml=x,
+            custom_xsl=XSLT_FILE,
+            char_limit=False,
+            chunk_size=CHUNK_SIZE,
+            to_compare_xpath=XPATH
+        ).preprocess()
+        new_save_path = os.path.join("tmp_to_collate", x.split('/')[-1])
+        with open(new_save_path, 'wb') as f:
+            f.write(tei)
+    all_manifests = os.path.join(".", "tmp_to_collate", '*.xml')
+    print(f"TEI updated ({new_save_path})")
     os.makedirs('collate-out', exist_ok=True)
     os.makedirs('collate-out/collated', exist_ok=True)
     output_dir = "./collate-out/collated"
     result_file = f'{output_dir}/collated.xml'
-    # result_html = './index.html'
+    result_html = './index.html'
 
     print("starting...")
     CxCollate(
@@ -105,7 +127,8 @@ def collate_tei(save_path, path_dir, select):
         glob_recursive=False,
         output_dir=output_dir,
         char_limit=False,
-        chunk_size=7000,
+        chunk_size=CHUNK_SIZE,
+        to_compare_xpath=XPATH
     ).collate()
 
     files = glob.glob(f"{output_dir}/*.tei")
@@ -133,6 +156,8 @@ def collate_tei(save_path, path_dir, select):
     # with open(result_html, 'w') as f:
     #     f.write(full_doc.prettify("utf-8").decode('utf-8'))
     # result_html = full_doc.prettify("utf-8").decode('utf-8')
+
+    shutil.rmtree("tmp_to_collate")
     for x in glob.glob(f"{output_dir}/out__*"):
         print(f"removing {x}")
         os.remove(x)
@@ -140,7 +165,5 @@ def collate_tei(save_path, path_dir, select):
 
 
 def remove_dir(save_path):
-    unziped_dir = glob.glob(os.path.join(save_path, '*'))
-    for dir in unziped_dir:
-        shutil.rmtree(dir)
-        print(f'{dir}: dir removed')
+    shutil.rmtree(save_path)
+

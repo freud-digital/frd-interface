@@ -21,7 +21,7 @@
                success: function (data) { 
                   $("#result").html(data)
                },
-            });                
+            });
          }
       </script>
       <script type="text/javascript">
@@ -41,6 +41,13 @@
             result2.append(btn);
          }
          function collateMe(selected) {
+            let customSelect = document.querySelectorAll(".custom-select");
+            customSelect.forEach(function(el) {
+               el.setAttribute("disabled", "");
+            });
+            let repo = document.getElementById("repo_download");
+            repo.removeAttribute("onclick");
+            repo.style.backgroundColor = "#f1f1f1";
             var spinner = document.createElement('p');
             spinner.setAttribute('id', 'loading');
             spinner.innerHTML = "Kollationierung läuft...";
@@ -68,6 +75,11 @@
                   result2.append(pom);
                   var loader = document.getElementById('loading');
                   loader.innerHTML = "Kollationierung abgeschlossen";
+                  customSelect.forEach(function(el) {
+                     el.removeAttribute("disabled");
+                  });
+                  repo.setAttribute("onclick", "return data();")
+                  repo.style.backgroundColor = "#17a2b8";
                }
             });
             $.ajax({
@@ -90,9 +102,15 @@
                   pom2.classList.add('dragout');
                   pom2.innerHTML = `Konstituierten Text herunterladen (${selected.split(',')[0]})`;
                   result2.append(pom2);
+
+                  // var filename3 = "index.html"
+                  // var pom3 = document.createElement('a');
+                  // pom3.setAttribute('download', filename3);
+                  // pom3.innerHTML = `KollationierungsApp (${selected.split(',')[0]}) herunterladen.´`;
+                  // result2.append(pom3);
                }
             });
-         }
+         }   
       </script>
       <style>
          .container {
@@ -111,14 +129,14 @@
             </div>
             <div class="row">
                <div class="col-md-12" style="margin: 0 auto; text-align:center; margin-bottom: 2em;">
-                  <a href="#" class="btn btn-info" onclick="return data();">Werke herunterladen</a>
+                  <a href="#" id="repo_download" class="btn btn-info" onclick="return data();">Werke herunterladen</a>
                </div>
             </div>
             <div class="row">
                <div class="col-md-3" style="margin: 0 auto; ">
                   <div id="result" style="display:block;"></div>
                </div>
-               <div class="col-md-9" style="margin: 0 auto; ">
+               <div class="col-md-8" style="margin: 0 auto; ">
                   <div id="result2" style="display:block;"></div>
                </div>
             </div>
