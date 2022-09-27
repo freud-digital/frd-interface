@@ -11,7 +11,8 @@ from acdh_collatex_utils.post_process import (
     merge_tei_fragments,
     make_full_tei_doc,
     define_readings,
-    make_positive_app
+    make_positive_app,
+    merge_html_fragments
 )
 from app.config import XPATH, CHUNK_SIZE
 
@@ -22,21 +23,26 @@ XSLT_FILE = os.path.join(
     "make_tei.xslt"
 )
 
+HTML = os.path.join(
+    "index.html"
+)
 
-def get_frd_data(url, save_path, path_dir, save):
-    frd_data = requests.get(
-        url,
-        stream=True
-    )
-    filename = url.split('/')[-1]
-    os.makedirs(save_path, exist_ok=True)
-    with open(filename, 'wb') as output_file:
-        output_file.write(frd_data.content)
-    print('Downloading Completed')
-    with ZipFile(filename, 'r') as zip_ref:
-        zip_ref.extractall(save_path)
-    os.remove(filename)
-    print(f'{filename}: file removed')
+
+def get_frd_data(url, save_path, path_dir):
+    if os.path.exists(save_path) == False:
+        frd_data = requests.get(
+            url,
+            stream=True
+        )
+        filename = url.split('/')[-1]
+        os.makedirs(save_path, exist_ok=True)
+        with open(filename, 'wb') as output_file:
+            output_file.write(frd_data.content)
+        print('Downloading Completed')
+        with ZipFile(filename, 'r') as zip_ref:
+            zip_ref.extractall(save_path)
+        os.remove(filename)
+        print(f'{filename}: file removed')
     unziped_dir = glob.glob(os.path.join(save_path, '*'))
     werke = glob.glob(os.path.join(unziped_dir[0], path_dir, '*'))
     dct_man = {}
@@ -50,9 +56,6 @@ def get_frd_data(url, save_path, path_dir, save):
         del dct_man['worklist.csv']
     except KeyError:
         print('worklist.csv not found')
-    if save:
-        with open('test.json', "w") as f:
-            json.dump(dct_man, f)
     return dct_man
 
 
@@ -91,9 +94,14 @@ def copy_xml(save_path, path_dir, select):
     tei = ET.parse(base_manifest[0])
     root = tei.getroot()
     tei = ET.tostring(root, encoding="utf-8")
-    with open('test.xml', 'wb') as f:
-        f.write(tei)
     return tei
+
+def copy_html():
+    html = HTML
+    html = ET.parse(html)
+    root = html.getroot()
+    html = ET.tostring(root, encoding="utf-8")
+    return html
 
 
 def collate_tei(save_path, path_dir, select):
@@ -113,13 +121,13 @@ def collate_tei(save_path, path_dir, select):
         new_save_path = os.path.join("tmp_to_collate", x.split('/')[-1])
         with open(new_save_path, 'wb') as f:
             f.write(tei)
+        print(f"TEI updated ({new_save_path})")
     all_manifests = os.path.join(".", "tmp_to_collate", '*.xml')
-    print(f"TEI updated ({new_save_path})")
     os.makedirs('collate-out', exist_ok=True)
     os.makedirs('collate-out/collated', exist_ok=True)
     output_dir = "./collate-out/collated"
     result_file = f'{output_dir}/collated.xml'
-    # result_html = './index.html'
+    result_html = './index.html'
 
     print("starting...")
     CxCollate(
@@ -151,10 +159,10 @@ def collate_tei(save_path, path_dir, select):
     #         ).decode('utf-8')
     #     )
     result_tei = ET.tostring(crit_ap_with_rdgs.getroot(), encoding='UTF-8')
-    # files = glob.glob(f"{output_dir}/*.html")
-    # full_doc = merge_html_fragments(files)
-    # with open(result_html, 'w') as f:
-    #     f.write(full_doc.prettify("utf-8").decode('utf-8'))
+    files = glob.glob(f"{output_dir}/*.html")
+    full_doc = merge_html_fragments(files)
+    with open(result_html, 'w') as f:
+        f.write(full_doc.prettify("utf-8").decode('utf-8'))
     # result_html = full_doc.prettify("utf-8").decode('utf-8')
 
     shutil.rmtree("tmp_to_collate")

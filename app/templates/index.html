@@ -31,6 +31,7 @@
             var selected = [manifest, id];
             var btn = document.createElement("a");
             btn.setAttribute('class', 'btn btn-primary');
+            btn.setAttribute('id', 'to_collate');
             btn.setAttribute('style', 'display:block;');
             btn.setAttribute("onclick", `collateMe('${selected}');`);
             btn.innerHTML = `Mit konstituierten Text: ${manifest} Kollationierung starten`;
@@ -46,8 +47,14 @@
                el.setAttribute("disabled", "");
             });
             let repo = document.getElementById("repo_download");
+            let to_collate = document.getElementById("to_collate");
             repo.removeAttribute("onclick");
             repo.style.backgroundColor = "#f1f1f1";
+
+            let attr = to_collate.getAttribute("onclick");
+            to_collate.removeAttribute("onclick");
+            to_collate.classList.remove("btn-primary");
+
             var spinner = document.createElement('p');
             spinner.setAttribute('id', 'loading');
             spinner.innerHTML = "Kollationierung läuft...";
@@ -56,12 +63,12 @@
             $.ajax({
                type: "POST",
                url: `/collate/${[selected]}`,
-               success: function (data) { 
-                  var tei = data;
-                  var filename = `col_by__${selected.split(',')[0]}`;
-                  var result2 = document.getElementById('result2');
-                  var pom = document.createElement('a');
-                  var bb = new Blob([tei], {type: 'text/plain'});
+               success: function (data) {
+                  let tei = data;
+                  let filename = `col_by__${selected.split(',')[0]}`;
+                  let result2 = document.getElementById('result2');
+                  let pom = document.createElement('a');
+                  let bb = new Blob([tei], {type: 'text/plain'});
 
                   pom.setAttribute('href', window.URL.createObjectURL(bb));
                   pom.setAttribute('download', filename);
@@ -73,41 +80,71 @@
                   pom.setAttribute('style', 'display:block;margin-bottom:2em;');
                   pom.innerHTML = `Kollationierung herunterladen (${selected.split(',')[0]}) `;
                   result2.append(pom);
-                  var loader = document.getElementById('loading');
+                  
+                  let loader = document.getElementById('loading');
                   loader.innerHTML = "Kollationierung abgeschlossen";
+                  
                   customSelect.forEach(function(el) {
                      el.removeAttribute("disabled");
                   });
+                  
                   repo.setAttribute("onclick", "return data();")
                   repo.style.backgroundColor = "#17a2b8";
+
+                  to_collate.setAttribute("onclick", attr);
+                  to_collate.classList.add("btn-primary");
                }
             });
             $.ajax({
                type: "POST",
                url: `/select/${[selected]}`,
                success: function (data2) { 
-                  var tei2 = data2;
-                  var filename2 = selected.split(',')[0];
-                  var result2 = document.getElementById('result2');
-                  var pom2 = document.createElement('a');
-                  var bb2 = new Blob([tei2], {type: 'text/plain'});
+                  let tei = data2;
+                  let filename = selected.split(',')[0];
+                  let result2 = document.getElementById('result2');
+                  let pom = document.createElement('a');
+                  let bb = new Blob([tei], {type: 'text/plain'});
 
-                  pom2.setAttribute('href', window.URL.createObjectURL(bb2));
-                  pom2.setAttribute('download', filename2);
+                  pom.setAttribute('href', window.URL.createObjectURL(bb));
+                  pom.setAttribute('download', filename);
 
-                  pom2.dataset.downloadurl = ['text/plain', pom2.download, pom2.href].join(':');
-                  pom2.draggable = true;
-                  pom2.setAttribute('class', 'btn btn-success');
-                  pom2.setAttribute('style', 'display:block;margin-bottom:2em;');
-                  pom2.classList.add('dragout');
-                  pom2.innerHTML = `Konstituierten Text herunterladen (${selected.split(',')[0]})`;
-                  result2.append(pom2);
+                  pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+                  pom.draggable = true;
+                  pom.setAttribute('class', 'btn btn-success');
+                  pom.setAttribute('style', 'display:block;margin-bottom:2em;');
+                  pom.style.backgroundColor = "red";
+                  pom.classList.add('dragout');
+                  pom.innerHTML = `Konstituierten Text herunterladen (${selected.split(',')[0]})`;
+                  result2.append(pom);
 
                   // var filename3 = "index.html"
                   // var pom3 = document.createElement('a');
                   // pom3.setAttribute('download', filename3);
                   // pom3.innerHTML = `KollationierungsApp (${selected.split(',')[0]}) herunterladen.´`;
                   // result2.append(pom3);
+               }
+            });
+            $.ajax({
+               type: "POST",
+               url: "/html",
+               success: function (data3) { 
+                  let html = data3;
+                  let filename = "index.html"
+                  let result2 = document.getElementById('result2');
+                  let pom = document.createElement('a');
+                  let bb = new Blob([html], {type: 'text/plain'});
+
+                  pom.setAttribute('href', window.URL.createObjectURL(bb));
+                  pom.setAttribute('download', filename);
+
+                  pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+                  pom.draggable = true;
+                  pom.setAttribute('class', 'btn btn-success');
+                  pom.setAttribute('style', 'display:block;margin-bottom:2em;');
+                  pom.style.backgroundColor = "orange";
+                  pom.classList.add('dragout');
+                  pom.innerHTML = `WebApp (index.html) zur Kollationierung herunterladen`;
+                  result2.append(pom);
                }
             });
          }   
