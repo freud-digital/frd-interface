@@ -2,7 +2,6 @@ import os
 import glob
 import shutil
 import requests
-import json
 import xml.etree.ElementTree as ET
 
 from zipfile import ZipFile
@@ -29,7 +28,7 @@ HTML = os.path.join(
 
 
 def get_frd_data(url, save_path, path_dir):
-    if os.path.exists(save_path) == False:
+    if not os.path.exists(save_path):
         frd_data = requests.get(
             url,
             stream=True
@@ -95,6 +94,7 @@ def copy_xml(save_path, path_dir, select):
     root = tei.getroot()
     tei = ET.tostring(root, encoding="utf-8")
     return tei
+
 
 def copy_html():
     html = HTML
