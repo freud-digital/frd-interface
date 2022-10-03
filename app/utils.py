@@ -64,7 +64,6 @@ async def get_frd_data(url, save_path, path_dir):
         del dct_man['worklist.csv']
     except KeyError:
         print('worklist.csv not found')
-    await asyncio.sleep(1)
     return dct_man
 
 
@@ -87,7 +86,6 @@ async def create_html_template(input):
         div += '</div>'
         all_works += div
     all_works += '</div>'
-    await asyncio.sleep(1)
     return all_works
 
 

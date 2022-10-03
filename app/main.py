@@ -1,6 +1,3 @@
-
-import asyncio
-
 from flask import Flask, render_template
 
 from app.config import FRD_DATA, WERK_PATH
