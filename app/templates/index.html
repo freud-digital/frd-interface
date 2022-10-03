@@ -130,7 +130,15 @@
                      });
                   });
                },
-               timeout: 60000
+               // timeout: 60000,
+               statusCode: {
+                  404: function() {
+                     console.log( "server request resulted in 404 error" );
+                  },
+                  500: function() {
+                     console.log( "server request resulted in 500 error" );
+                  }
+               }
             });
             $.ajax({
                type: "POST",

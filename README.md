@@ -12,10 +12,10 @@
 ### build & run
 
 * `docker build -t frd-int .`
-* `docker run -d --name frd-int -p 80:80 frd-int`
+* `docker run -d --name frd-int -p 8020:8020 frd-int`
 
 or just run `./build_and_run.sh`
 
 ### use published image
 
-docker run -d --name frd-int -p 80:80 ghcr.io/freud-digital/frd-interface:latest
+docker run -d --name frd-int -p 8020:8020 ghcr.io/freud-digital/frd-interface:latest
