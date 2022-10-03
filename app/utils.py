@@ -3,8 +3,9 @@ import glob
 import shutil
 import requests
 import xml.etree.ElementTree as ET
-from datetime import datetime
+import asyncio
 
+from datetime import datetime
 from zipfile import ZipFile
 from acdh_collatex_utils.acdh_collatex_utils import CxCollate, CxReader
 from acdh_collatex_utils.post_process import (
@@ -35,7 +36,7 @@ HTML = os.path.join(
 )
 
 
-def get_frd_data(url, save_path, path_dir):
+async def get_frd_data(url, save_path, path_dir):
     if not os.path.exists(save_path):
         frd_data = requests.get(
             url,
@@ -63,10 +64,11 @@ def get_frd_data(url, save_path, path_dir):
         del dct_man['worklist.csv']
     except KeyError:
         print('worklist.csv not found')
+    await asyncio.sleep(1)
     return dct_man
 
 
-def create_html_template(input):
+async def create_html_template(input):
     all_works = '<div id="all_works">'
     for x in input:
         div = f'<div id="w__{x}">'
@@ -85,10 +87,11 @@ def create_html_template(input):
         div += '</div>'
         all_works += div
     all_works += '</div>'
+    await asyncio.sleep(1)
     return all_works
 
 
-def copy_xml(save_path, path_dir, select):
+async def copy_xml(save_path, path_dir, select):
     el = select
     werk = el[1].replace('s__', '')
     manifest = el[0]
@@ -101,19 +104,21 @@ def copy_xml(save_path, path_dir, select):
     tei = ET.parse(base_manifest[0])
     root = tei.getroot()
     tei = ET.tostring(root, encoding="utf-8")
+    await asyncio.sleep(1)
     return tei
 
 
-def copy_html():
+async def copy_html():
     h = HTML
     html = ET.parse(h)
     os.remove(h)
     root = html.getroot()
     html = ET.tostring(root, encoding="utf-8")
+    await asyncio.sleep(1)
     return html
 
 
-def collate_tei(save_path, path_dir, select):
+async def collate_tei(save_path, path_dir, select):
     el = select
     werk = el[1].replace('s__', '')
     manifest = el[0]
@@ -132,6 +137,7 @@ def collate_tei(save_path, path_dir, select):
         with open(new_save_path, 'wb') as f:
             f.write(tei)
         print(f"TEI updated ({new_save_path})")
+        await asyncio.sleep(1)
     all_manifests = os.path.join(".", tmp_dir, '*.xml')
     col_out = os.path.join('collate-out', TS_STR)
     os.makedirs(col_out, exist_ok=True)
@@ -140,6 +146,7 @@ def collate_tei(save_path, path_dir, select):
     result_file = f'{output_dir}/collated.xml'
     result_html = f'{output_dir}/index.html'
 
+    await asyncio.sleep(1)
     print("starting...")
     CxCollate(
         glob_pattern=all_manifests,
@@ -149,6 +156,7 @@ def collate_tei(save_path, path_dir, select):
         chunk_size=CHUNK_SIZE,
         to_compare_xpath=XPATH
     ).collate()
+    await asyncio.sleep(1)
 
     files = glob.glob(f"{output_dir}/*.tei")
     print(len(files))
@@ -179,8 +187,9 @@ def collate_tei(save_path, path_dir, select):
     for x in glob.glob(f"{output_dir}/out__*"):
         print(f"removing {x}")
         os.remove(x)
+        await asyncio.sleep(1)
     return result_tei
 
 
-def remove_dir(save_path):
+async def remove_dir(save_path):
     shutil.rmtree(save_path)

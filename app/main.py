@@ -1,4 +1,6 @@
 
+import asyncio
+
 from flask import Flask, render_template
 
 from app.config import FRD_DATA, WERK_PATH
@@ -20,30 +22,30 @@ def index():
 
 
 @app.route('/data', methods=['POST'])
-def get_werke():
-    werke = get_frd_data(FRD_DATA, 'tmp', WERK_PATH)
-    html = create_html_template(werke)
+async def get_werke():
+    werke = await get_frd_data(FRD_DATA, 'tmp', WERK_PATH)
+    html = await create_html_template(werke)
     return html
 
 
 @app.route('/select/<string:selected>', methods=['POST'])
-def get_selected(selected):
+async def get_selected(selected):
     sel = selected.split(',')
-    copy = copy_xml(save_path='tmp', path_dir=WERK_PATH, select=sel)
+    copy = await copy_xml(save_path='tmp', path_dir=WERK_PATH, select=sel)
     # remove_dir(save_path='tmp')
     return copy
 
 
 @app.route('/collate/<string:selected>', methods=['POST'])
-def get_collated(selected):
+async def get_collated(selected):
     sel = selected.split(',')
-    collated = collate_tei(save_path='tmp', path_dir=WERK_PATH, select=sel)
+    collated = await collate_tei(save_path='tmp', path_dir=WERK_PATH, select=sel)
     return collated
 
 
 @app.route('/html', methods=['POST'])
-def get_html():
-    html = copy_html()
+async def get_html():
+    html = await copy_html()
     # remove_dir(save_path='tmp')
     return html
 

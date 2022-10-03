@@ -71,8 +71,6 @@
                type: "POST",
                url: `/collate/${[selected]}`,
                complete: function (data, response) {
-                  console.log(response);
-                  console.log(data);
                   let tei = data.responseText;
                   let filename = `col_by__${selected.split(',')[0]}`;
                   let result2 = document.getElementById('result2');
