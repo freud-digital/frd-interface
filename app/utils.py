@@ -3,6 +3,7 @@ import glob
 import shutil
 import requests
 import xml.etree.ElementTree as ET
+from datetime import datetime
 
 from zipfile import ZipFile
 from acdh_collatex_utils.acdh_collatex_utils import CxCollate, CxReader
@@ -110,7 +111,11 @@ def collate_tei(save_path, path_dir, select):
     werk = el[1].replace('s__', '')
     manifest = el[0]
     all_manifests_pre = glob.glob(os.path.join(save_path, '*', path_dir, werk, '*.xml'))
-    os.makedirs("tmp_to_collate", exist_ok=True)
+    dt = datetime.now()
+    ts = datetime.timestamp(dt)
+    ts_str = str(ts).replace('.', '')
+    tmp_dir = os.path.join("tmp_to_collate", ts_str)
+    os.makedirs(tmp_dir, exist_ok=True)
     for x in all_manifests_pre:
         tei = CxReader(
             xml=x,
@@ -119,14 +124,15 @@ def collate_tei(save_path, path_dir, select):
             chunk_size=CHUNK_SIZE,
             to_compare_xpath=XPATH
         ).preprocess()
-        new_save_path = os.path.join("tmp_to_collate", x.split('/')[-1])
+        new_save_path = os.path.join(tmp_dir, x.split('/')[-1])
         with open(new_save_path, 'wb') as f:
             f.write(tei)
         print(f"TEI updated ({new_save_path})")
-    all_manifests = os.path.join(".", "tmp_to_collate", '*.xml')
-    os.makedirs('collate-out', exist_ok=True)
-    os.makedirs('collate-out/collated', exist_ok=True)
-    output_dir = "./collate-out/collated"
+    all_manifests = os.path.join(".", tmp_dir, '*.xml')
+    col_out = os.path.join('collate-out', ts_str)
+    os.makedirs(col_out, exist_ok=True)
+    os.makedirs(os.path.join(col_out, 'collated'), exist_ok=True)
+    output_dir = f"./{col_out}/collated"
     result_file = f'{output_dir}/collated.xml'
     result_html = './index.html'
 
@@ -165,7 +171,7 @@ def collate_tei(save_path, path_dir, select):
     with open(result_html, 'w') as f:
         f.write(full_doc.prettify("utf-8").decode('utf-8'))
     result_html = full_doc.prettify("utf-8").decode('utf-8')
-    shutil.rmtree("tmp_to_collate")
+    shutil.rmtree(tmp_dir)
     for x in glob.glob(f"{output_dir}/out__*"):
         print(f"removing {x}")
         os.remove(x)

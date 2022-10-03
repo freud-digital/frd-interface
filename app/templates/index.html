@@ -32,16 +32,22 @@
             var btn = document.createElement("a");
             btn.setAttribute('class', 'btn btn-primary');
             btn.setAttribute('id', 'to_collate');
-            btn.setAttribute('style', 'display:block;');
+            btn.setAttribute('style', 'display:block;margin-bottom:2em;');
             btn.setAttribute("onclick", `collateMe('${selected}');`);
             btn.innerHTML = `Mit konstituierten Text: ${manifest} Kollationierung starten`;
             result2 = document.getElementById('result2');
-            while (result2.firstChild) {
+            if (result2.firstChild) {
                result2.removeChild(result2.firstChild);
             }
-            result2.append(btn);
+            result2.prepend(btn);
          }
          function collateMe(selected) {
+            var pom_div = document.createElement('div');
+            var pom_attr = `pom_div__${Date.now()}`;
+            pom_div.setAttribute("id", pom_attr);
+            var result2 = document.getElementById('result2');
+            result2.append(pom_div);
+            /*
             let customSelect = document.querySelectorAll(".custom-select");
             customSelect.forEach(function(el) {
                el.setAttribute("disabled", "");
@@ -54,12 +60,11 @@
             let attr = to_collate.getAttribute("onclick");
             to_collate.removeAttribute("onclick");
             to_collate.classList.remove("btn-primary");
-
+            */
             var spinner = document.createElement('p');
             spinner.setAttribute('id', 'loading');
-            spinner.innerHTML = "Kollationierung läuft...";
-            var result2 = document.getElementById('result2');
-            result2.append(spinner);
+            spinner.innerHTML = `Kollationierung läuft: ${selected.split(',')[0]} ...`;
+            document.getElementById(pom_attr).append(spinner);
             $.ajax({
                type: "POST",
                url: `/collate/${[selected]}`,
@@ -81,11 +86,11 @@
                   pom.setAttribute('class', 'btn btn-success');
                   pom.setAttribute('style', 'display:block;margin-bottom:2em;');
                   pom.innerHTML = `Kollationierung herunterladen (${selected.split(',')[0]}) `;
-                  result2.append(pom);
+                  document.getElementById(pom_attr).append(pom);
                   
                   let loader = document.getElementById('loading');
-                  loader.innerHTML = "Kollationierung abgeschlossen";
-                  
+                  loader.innerHTML = `Kollationierung abgeschlossen: ${selected.split(',')[0]}`;
+                  /*
                   customSelect.forEach(function(el) {
                      el.removeAttribute("disabled");
                   });
@@ -95,7 +100,7 @@
 
                   to_collate.setAttribute("onclick", attr);
                   to_collate.classList.add("btn-primary");
-
+                  */
                   let app = document.createElement('a');
                   app.setAttribute("class", "btn btn-success");
                   app.setAttribute("id", "get_app");
@@ -104,7 +109,7 @@
                   app.style.backgroundColor = "#000";
                   app.style.color = "#fff";
                   app.innerHTML = "Create WebApp";
-                  result2.append(app);
+                  document.getElementById(pom_attr).append(app);
 
                   document.getElementById("get_app").addEventListener("click", function() {
                      $.ajax({
@@ -127,7 +132,7 @@
                            pom.style.backgroundColor = "orange";
                            pom.classList.add('dragout');
                            pom.innerHTML = `WebApp (index.html) zur Kollationierung herunterladen`;
-                           result2.append(pom);
+                           document.getElementById(pom_attr).append(pom);
                         }
                      });
                   });
@@ -162,7 +167,7 @@
                   pom.style.backgroundColor = "red";
                   pom.classList.add('dragout');
                   pom.innerHTML = `Konstituierten Text herunterladen (${selected.split(',')[0]})`;
-                  result2.append(pom);
+                  document.getElementById(pom_attr).append(pom);
                }
             });
          }   
