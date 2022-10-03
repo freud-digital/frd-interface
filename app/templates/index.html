@@ -45,6 +45,7 @@
             var pom_div = document.createElement('div');
             var pom_attr = `pom_div__${Date.now()}`;
             pom_div.setAttribute("id", pom_attr);
+            pom_div.style.border = "1px solid lightgrey";
             var result2 = document.getElementById('result2');
             result2.append(pom_div);
             /*
@@ -62,7 +63,8 @@
             to_collate.classList.remove("btn-primary");
             */
             var spinner = document.createElement('p');
-            spinner.setAttribute('id', 'loading');
+            var loader_attr = `loading_${Date.now()}`;
+            spinner.setAttribute('id', loader_attr);
             spinner.innerHTML = `Kollationierung läuft: ${selected.split(',')[0]} ...`;
             document.getElementById(pom_attr).append(spinner);
             $.ajax({
@@ -88,7 +90,7 @@
                   pom.innerHTML = `Kollationierung herunterladen (${selected.split(',')[0]}) `;
                   document.getElementById(pom_attr).append(pom);
                   
-                  let loader = document.getElementById('loading');
+                  let loader = document.getElementById(loader_attr);
                   loader.innerHTML = `Kollationierung abgeschlossen: ${selected.split(',')[0]}`;
                   /*
                   customSelect.forEach(function(el) {

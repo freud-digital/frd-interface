@@ -17,6 +17,10 @@ from acdh_collatex_utils.post_process import (
 from app.config import XPATH, CHUNK_SIZE
 
 
+DT = datetime.now()
+TS = datetime.timestamp(DT)
+TS_STR = str(TS).replace('.', '')
+
 XSLT_FILE = os.path.join(
     os.path.dirname(__file__),
     "fixtures",
@@ -24,6 +28,9 @@ XSLT_FILE = os.path.join(
 )
 
 HTML = os.path.join(
+    "collate-out",
+    TS_STR,
+    "collated",
     "index.html"
 )
 
@@ -111,10 +118,7 @@ def collate_tei(save_path, path_dir, select):
     werk = el[1].replace('s__', '')
     manifest = el[0]
     all_manifests_pre = glob.glob(os.path.join(save_path, '*', path_dir, werk, '*.xml'))
-    dt = datetime.now()
-    ts = datetime.timestamp(dt)
-    ts_str = str(ts).replace('.', '')
-    tmp_dir = os.path.join("tmp_to_collate", ts_str)
+    tmp_dir = os.path.join("tmp_to_collate", TS_STR)
     os.makedirs(tmp_dir, exist_ok=True)
     for x in all_manifests_pre:
         tei = CxReader(
@@ -129,12 +133,12 @@ def collate_tei(save_path, path_dir, select):
             f.write(tei)
         print(f"TEI updated ({new_save_path})")
     all_manifests = os.path.join(".", tmp_dir, '*.xml')
-    col_out = os.path.join('collate-out', ts_str)
+    col_out = os.path.join('collate-out', TS_STR)
     os.makedirs(col_out, exist_ok=True)
     os.makedirs(os.path.join(col_out, 'collated'), exist_ok=True)
     output_dir = f"./{col_out}/collated"
     result_file = f'{output_dir}/collated.xml'
-    result_html = './index.html'
+    result_html = f'{output_dir}/index.html'
 
     print("starting...")
     CxCollate(
